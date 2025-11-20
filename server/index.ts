@@ -10,12 +10,11 @@ import rateLimit from 'express-rate-limit'
 import getPort, { portNumbers } from 'get-port'
 import morgan from 'morgan'
 import { type ServerBuild } from 'react-router'
+import { ENV } from 'varlock/env'
 
-const MODE = process.env.NODE_ENV ?? 'development'
-const IS_PROD = MODE === 'production'
-const IS_DEV = MODE === 'development'
-const ALLOW_INDEXING = process.env.ALLOW_INDEXING !== 'false'
-const SENTRY_ENABLED = IS_PROD && process.env.SENTRY_DSN
+const IS_PROD = ENV.MODE === 'production'
+const IS_DEV = ENV.MODE === 'development'
+const SENTRY_ENABLED = IS_PROD && ENV.SENTRY_DSN
 
 if (SENTRY_ENABLED) {
 	void import('./utils/monitoring.js').then(({ init }) => init())
@@ -28,7 +27,7 @@ const viteDevServer = IS_PROD
 				server: {
 					middlewareMode: true,
 				},
-				// We tell Vite we are running a custom app instead of
+				// We tell Vite we are running a custom app instead of 
 				// the SPA default so it doesn't run HTML middleware
 				appType: 'custom',
 			}),
@@ -84,11 +83,7 @@ if (viteDevServer) {
 	// Remix fingerprints its assets so we can cache forever.
 	app.use(
 		'/assets',
-		express.static('build/client/assets', {
-			immutable: true,
-			maxAge: '1y',
-			fallthrough: false,
-		}),
+		express.static('build/client/assets', { immutable: true, maxAge: '1y', fallthrough: false }),
 	)
 
 	// Everything else (like favicon.ico) is cached for an hour. You may want to be
@@ -194,7 +189,7 @@ async function getBuild() {
 	}
 }
 
-if (!ALLOW_INDEXING) {
+if (!ENV.ALLOW_INDEXING) {
 	app.use((_, res, next) => {
 		res.set('X-Robots-Tag', 'noindex, nofollow')
 		next()
@@ -205,7 +200,7 @@ app.all(
 	'*',
 	createRequestHandler({
 		getLoadContext: () => ({ serverBuild: getBuild() }),
-		mode: MODE,
+		mode: ENV.MODE,
 		build: async () => {
 			const { error, build } = await getBuild()
 			// gracefully "catch" the error
@@ -217,7 +212,7 @@ app.all(
 	}),
 )
 
-const desiredPort = Number(process.env.PORT || 3000)
+const desiredPort = ENV.PORT
 const portToUse = await getPort({
 	port: portNumbers(desiredPort, desiredPort + 100),
 })
