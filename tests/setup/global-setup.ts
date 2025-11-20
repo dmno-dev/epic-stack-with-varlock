@@ -1,19 +1,18 @@
 import 'varlock/auto-load'
-import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { execaCommand } from 'execa'
 import fsExtra from 'fs-extra'
+import { ENV } from 'varlock/env'
 import '#app/utils/cache.server.ts'
 
-export const BASE_DATABASE_PATH = path.join(
-	process.cwd(),
-	`./tests/prisma/base.db`,
-)
+
 
 export async function setup() {
-	const databaseExists = await fsExtra.pathExists(BASE_DATABASE_PATH)
+	const dbPath = fileURLToPath(ENV.DATABASE_URL);
+	const databaseExists = await fsExtra.pathExists(dbPath)
 
 	if (databaseExists) {
-		const databaseLastModifiedAt = (await fsExtra.stat(BASE_DATABASE_PATH))
+		const databaseLastModifiedAt = (await fsExtra.stat(dbPath))
 			.mtime
 		const prismaSchemaLastModifiedAt = (
 			await fsExtra.stat('./prisma/schema.prisma')
@@ -28,10 +27,6 @@ export async function setup() {
 		'npx prisma migrate reset --force --skip-seed --skip-generate',
 		{
 			stdio: 'inherit',
-			env: {
-				...process.env,
-				DATABASE_URL: `file:${BASE_DATABASE_PATH}`,
-			},
 		},
 	)
 }
