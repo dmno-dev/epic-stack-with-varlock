@@ -1,54 +1,35 @@
-<div align="center">
-  <h1 align="center"><a href="https://www.epicweb.dev/epic-stack">The Epic Stack 🚀</a></h1>
-  <strong align="center">
-    Ditch analysis paralysis and start shipping Epic Web apps.
-  </strong>
-  <p>
-    This is an opinionated project starter and reference that allows teams to
-    ship their ideas to production faster and on a more stable foundation based
-    on the experience of <a href="https://kentcdodds.com">Kent C. Dodds</a> and
-    <a href="https://github.com/epicweb-dev/epic-stack/graphs/contributors">contributors</a>.
-  </p>
-</div>
+# Epic Stack + Varlock
 
-```sh
-npx epicli
-```
+An example repo using [Varlock](https://varlock.dev/) within the Epic Stack to help manage configuration and secrets.
 
-[![The Epic Stack](https://github-production-user-asset-6210df.s3.amazonaws.com/1500684/246885449-1b00286c-aa3d-44b2-9ef2-04f694eb3592.png)](https://www.epicweb.dev/epic-stack)
+With Varlock, we convert the `.env.example` file into a `.env.schema` which contains additional schema information about all configuration in the system. This will improve developer onboarding into the epic stack, as well as ongoing DX as devs add more config into their apps. It adds additional guardrails around configuration in general, and notably adds additional protection for sensitive secrets.
 
-[The Epic Stack](https://www.epicweb.dev/epic-stack)
+## Why do this?
+- validations, default values, and documentation are all now in one source of truth (`.env.schema`)
+- no more duplication between `.env.example` and `.env`, which means it will never get out of sync
+- only overrides must be added by user
+- clear env validation, decoupled from the application booting
+- improved TS types / IntelliSense
+- allows more flexible validation and composition of values based on other items
+- easy to now pull secrets from secure backends like 1pass, etc
+- leak prevention! log redaction!
+- clear error messages when accessing bad env vars, or using them in wrong place
 
-<hr />
+## Screenshots
 
-## Watch Kent's Introduction to The Epic Stack
+Some screenshots of varlock in action:
 
-[![Epic Stack Talk slide showing Flynn Rider with knives, the text "I've been around and I've got opinions" and Kent speaking in the corner](https://github-production-user-asset-6210df.s3.amazonaws.com/1500684/277818553-47158e68-4efc-43ae-a477-9d1670d4217d.png)](https://www.epicweb.dev/talks/the-epic-stack)
+_`varlock load` showing loaded and validated env_
+<img width="488" height="393" alt="image" src="https://github.com/user-attachments/assets/9e80775e-ddf4-47b8-8ca1-0e4471c37299" />
 
-["The Epic Stack" by Kent C. Dodds](https://www.epicweb.dev/talks/the-epic-stack)
+_Improved IntelliSense_
+<img width="435" height="131" alt="image" src="https://github.com/user-attachments/assets/3732dc0f-79f5-4ee5-a846-d314b31db1da" />
 
-## Docs
+_Leak detection example_
+<img width="657" height="201" alt="image" src="https://github.com/user-attachments/assets/7598448a-d18c-47b6-b7c5-df3c68bbd875" />
 
-[Read the docs](https://github.com/epicweb-dev/epic-stack/blob/main/docs)
-(please 🙏).
+_Log redaction example_
+<img width="202" height="52" alt="image" src="https://github.com/user-attachments/assets/3643b5d0-eec6-4f68-a488-0dfda7f18684" />
 
-## Support
-
-- 🆘 Join the
-  [discussion on GitHub](https://github.com/epicweb-dev/epic-stack/discussions)
-  and the [KCD Community on Discord](https://kcd.im/discord).
-- 💡 Create an
-  [idea discussion](https://github.com/epicweb-dev/epic-stack/discussions/new?category=ideas)
-  for suggestions.
-- 🐛 Open a [GitHub issue](https://github.com/epicweb-dev/epic-stack/issues) to
-  report a bug.
-
-## Branding
-
-Want to talk about the Epic Stack in a blog post or talk? Great! Here are some
-assets you can use in your material:
-[EpicWeb.dev/brand](https://epicweb.dev/brand)
-
-## Thanks
-
-You rock 🪨
+_Example of failing env validation_
+<img width="430" height="176" alt="image" src="https://github.com/user-attachments/assets/d6258c48-43b8-4b6a-95d9-596a99f24e2b" />
